@@ -18,6 +18,30 @@ POSTHOG_HOST = "https://us.i.posthog.com"
 POSTHOG_API_KEY = "phc_M0LMkbSaDsaXi5LeYE5A95Kz8hTHgsJ4POlqucehsse"
 
 
+def get_terminal_program() -> str:
+    """Detect terminal emulator across platforms."""
+    # macOS
+    if term := os.environ.get("TERM_PROGRAM"):
+        return term
+    # Specific terminals (Linux/cross-platform)
+    if os.environ.get("KITTY_WINDOW_ID"):
+        return "kitty"
+    if os.environ.get("WEZTERM_PANE"):
+        return "wezterm"
+    if os.environ.get("ALACRITTY_SOCKET"):
+        return "alacritty"
+    if os.environ.get("KONSOLE_VERSION"):
+        return "konsole"
+    if os.environ.get("GNOME_TERMINAL_SCREEN"):
+        return "gnome-terminal"
+    if os.environ.get("WT_SESSION"):
+        return "windows-terminal"
+    if os.environ.get("ConEmuPID"):
+        return "conemu"
+    # Fallback to generic TERM
+    return os.environ.get("TERM", "unknown")
+
+
 async def capture(
     event: str, **properties: str | int | float | bool | list[str]
 ) -> None:
@@ -35,13 +59,10 @@ async def capture(
     if event in ("app_started", "app_installed"):
         # Include version and environment context on session start and install
         props["claudechic_version"] = VERSION
-        try:
-            term_size = os.get_terminal_size()
-            props["term_width"] = term_size.columns
-            props["term_height"] = term_size.lines
-        except OSError:
-            pass
-        props["term_program"] = os.environ.get("TERM_PROGRAM", "unknown")
+        term_size = shutil.get_terminal_size()  # Falls back to (80, 24)
+        props["term_width"] = term_size.columns
+        props["term_height"] = term_size.lines
+        props["term_program"] = get_terminal_program()
         props["os"] = platform.system()
         props["has_uv"] = shutil.which("uv") is not None
         props["has_conda"] = shutil.which("conda") is not None
