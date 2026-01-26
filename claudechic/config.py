@@ -57,7 +57,7 @@ def _save_config() -> None:
     try:
         with os.fdopen(fd, "w", encoding="utf-8") as f:
             yaml.dump(_config, f, default_flow_style=False)
-        os.rename(tmp_path, CONFIG_PATH)
+        os.replace(tmp_path, CONFIG_PATH)
     except Exception:
         # Clean up temp file on failure
         try:
