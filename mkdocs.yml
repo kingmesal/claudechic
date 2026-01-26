@@ -29,6 +29,8 @@ markdown_extensions:
       anchor_linenums: true
   - pymdownx.superfences
   - pymdownx.inlinehilite
+  - pymdownx.tabbed:
+      alternate_style: true
   - admonition
   - pymdownx.details
   - attr_list

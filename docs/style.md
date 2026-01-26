@@ -8,31 +8,26 @@ Claude Chic uses basic visual design to deliver a Claude experience that is easy
 -  **Markdown Rendering:** because layout and tables are nice
 -  **Streaming support:** so that you get results immediately, rather than wait minutes while Claude is "Thinking..."
 
-## Side by Side Comparisons
+## Comparison
 
-We show the same session resumed in both Claude Chic and Claude Code
+=== "Claude Code"
 
+    ![Claude Code](https://github.com/user-attachments/assets/e6caa10a-0696-43f3-a1f3-10d9f620a389){ style="width: 100%" }
 
-<a href="../compare-style-colors.html">
-<table>
-<tr>
-<td width="49%"><img alt="Claude Chic" src="https://github.com/user-attachments/assets/229f3904-4dee-4f97-8fc7-d65fb78ac9cd" /></td>
-<td width="51%"><img alt="Claude Code" src="https://github.com/user-attachments/assets/e6caa10a-0696-43f3-a1f3-10d9f620a389" /></td>
-</tr>
-</table>
-</a>
+=== "Claude Chic"
 
-On the left notice how you can easily tell when Claude is speaking vs when there is a tool use.  Also notice that there is a lot more tool use than is apparent on the right (Claude Code has to omit information to not drown you in data)
+    ![Claude Chic](https://github.com/user-attachments/assets/229f3904-4dee-4f97-8fc7-d65fb78ac9cd){ style="width: 100%" }
 
-Each line in Claude Chic is expandable, so you can drill in if you want to.
+Notice how you can easily tell when Claude is speaking vs when there is a tool use. Also notice that there is a lot more tool use than is apparent in Claude Code (Claude Code has to omit information to not drown you in data).
 
-<a href="../compare-style-markdown.html">
-<table>
-<tr>
-<td width="49%"><img alt="Claude Chic expanded" src="https://github.com/user-attachments/assets/ebdee1a5-9700-4149-8e97-1fbe420852ca" /></td>
-<td width="51%"><img alt="Claude Code expanded" src="https://github.com/user-attachments/assets/c09c35af-8f62-417e-b7d9-f9bc0f78070a" /></td>
-</tr>
-</table>
-</a>
+Each line in Claude Chic is expandable, so you can drill in if you want to. Additionally, Claude Chic has nice rendering in Markdown.
+
+=== "Claude Code"
+
+    ![Claude Code expanded](https://github.com/user-attachments/assets/c09c35af-8f62-417e-b7d9-f9bc0f78070a){ style="width: 100%" }
+
+=== "Claude Chic"
+
+    ![Claude Chic expanded](https://github.com/user-attachments/assets/ebdee1a5-9700-4149-8e97-1fbe420852ca){ style="width: 100%" }
 
 Notice how proper markdown rendering in Claude Chic (thanks Textual!) makes it easier to read this content.
