@@ -584,7 +584,8 @@ class ChatApp(App):
 
     def watch_theme(self, theme: str) -> None:
         """Save theme preference when changed."""
-        set_theme(theme)
+        if theme != get_theme():
+            set_theme(theme)
 
     @work(exclusive=True, group="connect")
     async def _connect_initial_client(self) -> None:
