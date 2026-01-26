@@ -47,6 +47,116 @@ All include `agent_id`.
 - **Opt-out not opt-in** - check `get_analytics_enabled()` before sending
 - **Silent failures** - analytics must never crash or slow the app
 
+## Querying PostHog
+
+The `POSTHOG_API_KEY` environment variable contains a personal API key for querying.
+
+### HogQL (Recommended for Aggregations)
+
+PostHog supports HogQL, a SQL-like query language. Much cleaner for aggregations:
+
+```python
+import os, httpx
+
+key = os.environ['POSTHOG_API_KEY']
+
+r = httpx.post(
+    'https://us.i.posthog.com/api/projects/@current/query/',
+    headers={'Authorization': f'Bearer {key}'},
+    json={
+        'query': {
+            'kind': 'HogQLQuery',
+            'query': 'SELECT event, count() as cnt FROM events GROUP BY event ORDER BY cnt DESC'
+        }
+    },
+    timeout=30
+)
+for row in r.json()['results']:
+    print(f'{row[0]}: {row[1]}')
+```
+
+Common HogQL queries:
+```sql
+-- Event counts
+SELECT event, count() as cnt FROM events GROUP BY event ORDER BY cnt DESC
+
+-- Unique users
+SELECT count(DISTINCT distinct_id) as users FROM events
+
+-- Terminal breakdown
+SELECT properties.term_program as terminal, count() as cnt
+FROM events WHERE event = 'app_started'
+GROUP BY terminal ORDER BY cnt DESC
+
+-- Commands used
+SELECT properties.command as cmd, count() as cnt
+FROM events WHERE event = 'command_used'
+GROUP BY cmd ORDER BY cnt DESC
+
+-- Events in last 24h
+SELECT event, count() FROM events
+WHERE timestamp > now() - INTERVAL 1 DAY
+GROUP BY event
+
+-- Session durations
+SELECT avg(properties.duration_seconds) as avg_duration,
+       max(properties.duration_seconds) as max_duration
+FROM events WHERE event = 'app_closed'
+```
+
+### Events API (For Raw Event Data)
+
+Use the events API when you need individual events, not aggregations:
+
+```python
+import os, httpx
+
+key = os.environ['POSTHOG_API_KEY']
+
+r = httpx.get(
+    'https://us.i.posthog.com/api/projects/@current/events/',
+    params={'limit': 100, 'event': 'app_started'},
+    headers={'Authorization': f'Bearer {key}'},
+    timeout=30
+)
+events = r.json().get('results', [])
+
+for e in events:
+    print(e['properties'].get('term_program'))
+```
+
+Filter by time range:
+```python
+from datetime import datetime, timedelta, timezone
+after = (datetime.now(timezone.utc) - timedelta(days=1)).isoformat()
+params = {'limit': 100, 'after': after}
+```
+
+**Pagination warning:** The API can return duplicates. Always dedupe by event ID:
+```python
+seen_ids = set()
+all_events = []
+url = 'https://us.i.posthog.com/api/projects/@current/events/'
+params = {'limit': 100}
+
+while url:
+    r = httpx.get(url, params=params, headers={'Authorization': f'Bearer {key}'}, timeout=30)
+    data = r.json()
+    for e in data.get('results', []):
+        if e['id'] not in seen_ids:
+            seen_ids.add(e['id'])
+            all_events.append(e)
+    url = data.get('next')
+    params = {}  # next URL has params embedded
+```
+
+### Key Fields (Events API)
+- `e['event']` - event name
+- `e['distinct_id']` - user ID (UUID or "mrocklin")
+- `e['timestamp']` - ISO timestamp
+- `e['properties']` - event-specific data plus `$session_id`
+- `e['id']` - unique PostHog event ID (use for deduplication)
+
 ## Testing
 
 Add debug logging temporarily:
