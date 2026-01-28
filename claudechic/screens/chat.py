@@ -23,7 +23,15 @@ from claudechic.widgets import (
     FilesSection,
     HamburgerButton,
 )
+from claudechic.widgets.base.cursor import PointerMixin
 from claudechic.widgets.layout.footer import StatusFooter
+
+
+class InputContainer(PointerMixin, Vertical):
+    """Input container with text cursor on hover."""
+
+    pointer_style = "text"
+
 
 if TYPE_CHECKING:
     from claudechic.app import ChatApp
@@ -50,7 +58,7 @@ class ChatScreen(Screen):
         with Horizontal(id="main"):
             with Vertical(id="chat-column"):
                 yield ChatView(id="chat-view")
-                with Vertical(id="input-container"):
+                with InputContainer(id="input-container"):
                     yield ImageAttachments(id="image-attachments", classes="hidden")
                     yield HistorySearch(id="history-search")
                     yield ChatInput(id="input")
