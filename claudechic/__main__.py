@@ -32,6 +32,12 @@ def main():
         default=int(os.environ.get("CLAUDECHIC_REMOTE_PORT", "0")),
         help="Start HTTP server for remote control on this port",
     )
+    parser.add_argument(
+        "--dangerously-skip-permissions",
+        "--yolo",
+        action="store_true",
+        help="Auto-approve all tool uses without prompting (use in sandboxed environments)",
+    )
     parser.add_argument("prompt", nargs="*", help="Initial prompt to send")
     args = parser.parse_args()
 
@@ -54,6 +60,7 @@ def main():
             resume_session_id=resume_id,
             initial_prompt=initial_prompt,
             remote_port=args.remote_port,
+            skip_permissions=args.dangerously_skip_permissions,
         )
         app.run()
     except (KeyboardInterrupt, SystemExit):

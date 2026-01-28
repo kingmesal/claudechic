@@ -150,6 +150,7 @@ class ChatApp(App):
         resume_session_id: str | None = None,
         initial_prompt: str | None = None,
         remote_port: int = 0,
+        skip_permissions: bool = False,
     ) -> None:
         super().__init__()
         self.scroll_sensitivity_y = 1.0  # Smoother scrolling (default is 2.0)
@@ -159,6 +160,7 @@ class ChatApp(App):
         self._resume_on_start = resume_session_id
         self._initial_prompt = initial_prompt
         self._remote_port = remote_port
+        self._skip_permissions = skip_permissions
         # Event queues for testing
         self.interactions: asyncio.Queue[PermissionRequest] = asyncio.Queue()
         self.completions: asyncio.Queue[ResponseComplete] = asyncio.Queue()
@@ -542,7 +544,9 @@ class ChatApp(App):
         system_prompt = context_file.read_text()
 
         return ClaudeAgentOptions(
-            permission_mode="default",
+            permission_mode="bypassPermissions"
+            if self._skip_permissions
+            else "default",
             setting_sources=["user", "project", "local"],
             cwd=cwd,
             resume=resume,
@@ -578,6 +582,10 @@ class ChatApp(App):
         # Register and activate custom theme (use saved preference or default to chic)
         self.register_theme(CHIC_THEME)
         self.theme = get_theme() or "chic"
+
+        # Warn if running in YOLO mode
+        if self._skip_permissions:
+            self.notify("⚠️ Permission checks disabled", severity="warning", timeout=5)
 
         # Initialize AgentManager (but don't create agent yet - wait for screen ready)
         self.agent_mgr = AgentManager(self._make_options)
