@@ -3,6 +3,7 @@
 import argparse
 import os
 import sys
+import warnings
 from importlib.metadata import version
 
 from claudechic.app import ChatApp
@@ -10,6 +11,14 @@ from claudechic.errors import setup_logging
 
 # Set up file logging to ~/claudechic.log
 setup_logging()
+
+# Suppress Windows asyncio transport warnings on exit (issue #31)
+# These occur because ProactorEventLoop transport __del__ methods try to warn about
+# "unclosed transport" but fail because pipes are already closed.
+if sys.platform == "win32":
+    warnings.filterwarnings(
+        "ignore", message="unclosed transport", category=ResourceWarning
+    )
 
 
 def main():

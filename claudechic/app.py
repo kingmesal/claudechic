@@ -1317,6 +1317,17 @@ class ChatApp(App):
         duration = time.time() - getattr(self, "_app_start_time", time.time())
         await capture("app_closed", duration_seconds=int(duration), end_reason=reason)
 
+        # Windows-specific cleanup: allow asyncio transports to be garbage collected
+        # while the event loop is still running. Without this, Python's ProactorEventLoop
+        # transport __del__ methods fail trying to format warnings about "unclosed transport"
+        # because the pipes are already closed. See issue #31.
+        if sys.platform == "win32":
+            import gc
+
+            await asyncio.sleep(0.1)  # Let event loop process pending callbacks
+            gc.collect()  # Clean up transport references
+            await asyncio.sleep(0.1)  # Let any finalizers run
+
         # Suppress SDK stderr noise during exit (stream closed errors)
         sys.stderr = open(os.devnull, "w")
         self.exit()
