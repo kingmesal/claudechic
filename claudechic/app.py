@@ -554,6 +554,9 @@ class ChatApp(App):
         env: dict[str, str] = {}
         if not os.environ.get("ANTHROPIC_BASE_URL"):
             env["ANTHROPIC_API_KEY"] = ""
+        # Clear VIRTUAL_ENV so agents in worktrees use their own venv
+        if os.environ.get("VIRTUAL_ENV"):
+            env["VIRTUAL_ENV"] = ""
 
         return ClaudeAgentOptions(
             permission_mode="bypassPermissions"
