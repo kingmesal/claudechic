@@ -81,13 +81,17 @@ class ContextBar(IndicatorWidget):
         theme = self.app.current_theme
         warning = theme.warning if isinstance(theme.warning, str) else "#aaaa00"
         error = theme.error if isinstance(theme.error, str) else "#cc3333"
+        # Theme-aware colors
+        if theme.dark:
+            low_fill, empty_color, empty_text = "#666666", "#333333", "white"
+        else:
+            low_fill, empty_color, empty_text = "#999999", "#dddddd", "black"
         if pct < 0.5:
-            fill_color, text_color = "#666666", "white"
+            fill_color, text_color = low_fill, empty_text
         elif pct < 0.8:
             fill_color, text_color = warning, "black"
         else:
             fill_color, text_color = error, "white"
-        empty_color = "#333333"
         # Center percentage text in bar
         pct_str = f"{pct * 100:.0f}%"
         start = (bar_width - len(pct_str)) // 2
@@ -95,7 +99,7 @@ class ContextBar(IndicatorWidget):
         for i in range(bar_width):
             bg = fill_color if i < filled else empty_color
             if start <= i < start + len(pct_str):
-                fg = text_color if i < filled else "white"
+                fg = text_color if i < filled else empty_text
                 result.append(pct_str[i - start], style=f"{fg} on {bg}")
             else:
                 result.append(" ", style=f"on {bg}")

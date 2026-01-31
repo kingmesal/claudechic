@@ -2,15 +2,20 @@
 
 from unittest.mock import patch
 
-from textual.theme import Theme
 
-from claudechic.theme import CHIC_THEME, load_custom_themes
+from claudechic.theme import CHIC_THEME, CHIC_LIGHT_THEME, load_custom_themes
 
 
 def test_chic_theme_is_dark():
     """Default theme should be dark."""
     assert CHIC_THEME.dark is True
     assert CHIC_THEME.name == "chic"
+
+
+def test_chic_light_theme_is_light():
+    """Light theme should have dark=False."""
+    assert CHIC_LIGHT_THEME.dark is False
+    assert CHIC_LIGHT_THEME.name == "chic-light"
 
 
 def test_load_custom_themes_empty_config():

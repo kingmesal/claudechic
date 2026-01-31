@@ -38,6 +38,21 @@ CHIC_THEME = Theme(
     dark=True,
 )
 
+# Light variant - same hues, adjusted for white background
+CHIC_LIGHT_THEME = Theme(
+    name="chic-light",
+    primary="#b56600",  # Darker orange for contrast on white
+    secondary="#2277bb",  # Darker blue for readability
+    accent="#667788",  # Lighter gray-blue (visible on white)
+    background="#ffffff",
+    surface="#f0f0f0",  # Light gray for panels
+    panel="#cccccc",  # Light gray for borders
+    success="#2277bb",  # Match secondary
+    warning="#997700",  # Darker yellow-orange
+    error="#cc3333",  # Red works on both
+    dark=False,
+)
+
 
 def load_custom_themes() -> list[Theme]:
     """Load custom themes from config file.

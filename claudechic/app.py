@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 from textual.app import App
 from textual.screen import Screen
 
-from claudechic.theme import CHIC_THEME, load_custom_themes
+from claudechic.theme import CHIC_THEME, CHIC_LIGHT_THEME, load_custom_themes
 from textual.binding import Binding
 from textual.containers import Vertical, Horizontal
 from textual.events import MouseUp
@@ -654,8 +654,9 @@ class ChatApp(App):
 
             await start_server(self, self._remote_port)
 
-        # Register themes (chic default + user-defined from config)
+        # Register themes (chic default + light variant + user-defined from config)
         self.register_theme(CHIC_THEME)
+        self.register_theme(CHIC_LIGHT_THEME)
         for theme in load_custom_themes():
             self.register_theme(theme)
         self.theme = CONFIG.get("theme") or "chic"
