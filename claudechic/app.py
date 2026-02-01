@@ -2497,6 +2497,11 @@ class ChatApp(App):
             await agent.set_permission_mode("default")
             return PermissionResponse(PermissionChoice.ALLOW)
         else:
+            # Check for feedback in "deny:feedback" format
+            if choice.startswith(f"{PermissionChoice.DENY}:"):
+                return PermissionResponse(
+                    PermissionChoice.DENY, alternative_message=choice[5:]
+                )
             return PermissionResponse(PermissionChoice.DENY)
 
     def _update_footer_model(self, model: str | None) -> None:
