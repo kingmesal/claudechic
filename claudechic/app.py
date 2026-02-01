@@ -1337,6 +1337,7 @@ class ChatApp(App):
         selected = self.screen.get_selected_text()
         if selected and len(selected.strip()) > 0:
             self.copy_to_clipboard(selected)
+            self.notify("Copied", timeout=1)
 
     def action_quit(self) -> None:  # type: ignore[override]
         # If history search is visible, cancel it
