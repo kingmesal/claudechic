@@ -13,7 +13,12 @@ import subprocess
 import time
 from pathlib import Path
 
-from claudechic.features.roborev.models import ReviewDetail, ReviewJob
+from claudechic.features.roborev.models import (
+    VISIBLE_STATUSES,
+    ReviewDetail,
+    ReviewJob,
+    normalize_status,
+)
 
 log = logging.getLogger(__name__)
 
@@ -76,9 +81,13 @@ def list_reviews(
         data = json.loads(result.stdout)
         if isinstance(data, list):
             jobs = [ReviewJob.from_dict(item) for item in data]
-            # Show only unaddressed reviews by default
-            unaddressed = [j for j in jobs if not j.addressed]
-            return unaddressed[:limit]
+            # Only show actionable reviews: unaddressed + valid status
+            visible = [
+                j
+                for j in jobs
+                if not j.addressed and normalize_status(j.status) in VISIBLE_STATUSES
+            ]
+            return visible[:limit]
     except Exception:
         log.debug("Failed to list reviews", exc_info=True)
     return []
